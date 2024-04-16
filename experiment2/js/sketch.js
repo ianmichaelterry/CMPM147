@@ -15,16 +15,6 @@ let myInstance;
 let canvasContainer;
 var centerHorz, centerVert;
 
-class MyClass {
-    constructor(param1, param2) {
-        this.property1 = param1;
-        this.property2 = param2;
-    }
-
-    myMethod() {
-        // code to run when method is called
-    }
-}
 
 function resizeScreen() {
   centerHorz = canvasContainer.width() / 2; // Adjusted for drawing logic
@@ -34,6 +24,13 @@ function resizeScreen() {
   // redrawCanvas(); // Redraw everything based on new size
 }
 
+let xOffset = 0; // Initialize xOffset for the moving effect
+let yOffset = 10000; // A large yOffset to avoid visible tiling in the noise pattern
+let islandFrequency = 0.005; // Controls how often islands appear, adjust as needed
+let maxElevation = 20; // Maximum elevation for the islands
+let islandThreshold = 0.6; // Threshold to control when islands are generated
+
+
 // setup() function is called once when the program starts
 function setup() {
   // place our canvas, making it fit our container
@@ -42,36 +39,74 @@ function setup() {
   canvas.parent("canvas-container");
   // resize canvas is the page is resized
 
-  // create an instance of the class
-  myInstance = new MyClass("VALUE1", "VALUE2");
+
+    // Seed the noise function for procedural generation
+    noiseSeed(millis());
 
   $(window).resize(function() {
     resizeScreen();
   });
   resizeScreen();
+
+  frameRate(30); // Lower frame rate for smoother animation
+  noiseDetail(8, 0.65); // Adjust noise detail for smoother landscape features
 }
 
-// draw() function is called repeatedly, it's the main animation loop
 function draw() {
-  background(220);    
-  // call a method on the instance
-  myInstance.myMethod();
+  background(220);
 
-  // Set up rotation for the rectangle
-  push(); // Save the current drawing context
-  translate(centerHorz, centerVert); // Move the origin to the rectangle's center
-  rotate(frameCount / 100.0); // Rotate by frameCount to animate the rotation
-  fill(234, 31, 81);
-  noStroke();
-  rect(-125, -125, 250, 250); // Draw the rectangle centered on the new origin
-  pop(); // Restore the original drawing context
+  // Parameters for the horizon and islands
+  let noiseScale = 0.0003; // Adjust scale for broader noise changes
+  let horizonSpeed = 10; // Adjust speed for a smoother scrolling effect
 
-  // The text is not affected by the translate and rotate
-  fill(255);
-  textStyle(BOLD);
-  textSize(140);
-  text("p5*", centerHorz - 105, centerVert + 40);
+  // Base horizon line position
+  let baselineY = height * 1/3;
+
+  // Increment the xOffset for animation
+  xOffset += horizonSpeed;
+
+  // Drawing the horizon line with one or two smooth islands
+  stroke(100); // Set line color to a gray tone
+  strokeWeight(2); // Set line thickness
+  noFill();
+  beginShape();
+
+  // Variables to determine if we are currently drawing an island
+  let drawingIsland = false;
+
+  for (let x = 0; x <= width; x++) {
+    // Generate elevation using noise
+    let elevationNoise = noise(x * noiseScale, yOffset);
+    let elevation = map(elevationNoise, 0, 1, -maxElevation, maxElevation);
+    
+    // Check if the noise value crosses the threshold for starting or ending an island
+    if (elevationNoise > islandThreshold && !drawingIsland) {
+      drawingIsland = true; // Start drawing an island
+    } else if (elevationNoise < islandThreshold / 2 && drawingIsland) {
+      drawingIsland = false; // Stop drawing an island
+    }
+
+    // If we are drawing an island, amplify the elevation
+    if (drawingIsland) {
+      elevation *= 2;
+    }
+
+    vertex(x, baselineY - elevation);
+  }
+  endShape();
+  
+  // If xOffset goes beyond the noise's period, reset it to keep the scrolling seamless
+  if (xOffset > width / noiseScale) {
+    xOffset -= width / noiseScale;
+  }
 }
+
+
+
+
+
+
+
 
 // mousePressed() function is called once after every time a mouse button is pressed
 function mousePressed() {
