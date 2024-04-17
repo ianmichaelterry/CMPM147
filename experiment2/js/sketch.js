@@ -29,7 +29,9 @@ function setGradient(x, y, w, h, topColor, bottomColor) {
 }
 
 let wind = 1; 
-
+let baseSpeed = 1;       // Base speed for grass and water movement
+let currentSpeed = 1;    // Current speed, starts at base speed
+let speedMultiplier = 1.7;  // Multiplier to increase speed by 30%
 
 let cloudNoiseOffset = 0; // Offset for cloud noise
 
@@ -63,25 +65,62 @@ function drawClouds() {
   }
 }
 
+let alligator = {
+  x: -250,  // Start off-screen to the left
+  visible: false,
+  timer: 0,
+  interval: 10000,  // Initial short interval for first appearance
+  firstTime: true   // Flag to check if it's the first appearance
+};
 
-// function drawClouds() {
-//   let cloudColor = lerpColor(color(255), color(135, 206, 250), 0.3); // Bluish white
-//   noStroke();
+function drawAlligator() {
+  if (alligator.visible) {
+      fill(58, 95, 11); 
+      noStroke();
+      // Draw the alligator head
+      ellipse(alligator.x, height - 40, 120, 30);
+      ellipse(alligator.x + 40, height - 50, 40, 30);
+      fill(0); 
+      ellipse(alligator.x + 40, height - 50, 15, 15);
+      fill(58, 95, 11); 
+      ellipse(alligator.x-100, height - 40, 190, 30);
+      ellipse(alligator.x-200, height - 40, 120, 20);
+      ellipse(alligator.x-350, height - 40, 100, 15);
 
-//   // Ensure clouds only form above the horizon and become puffier as they go higher
-//   for (let y = (height / 2)-80; y < (height / 2); y += 30 - (height / 2 - y) / 30) { // Adjust vertical spacing dynamically
-//     for (let x = 0; x < width; x += 10 + (height / 2 - y) / 20) { // Widen horizontal gaps as we move up
-//       // We use a modified form of noise that doesn't rely on frameCount or other changing variables
-//       let cloudDensity = noise((x + 1000) * 0.02, (y + 1000) * 0.02); // Offset by 1000 to use a 'different' part of the noise space
-//       if (cloudDensity > 0.25) { // Slightly higher threshold for better-formed clouds
-//         let opacity = map(cloudDensity, 0.25, 1, 0, 255);
-//         fill(red(cloudColor), green(cloudColor), blue(cloudColor), opacity);
-//         let cloudSize = cloudDensity * 60; // Uniform size adjustment for simpler control
-//         ellipse(x, y, cloudSize, cloudSize / 2); // Keep clouds elliptical but flatter
-//       }
-//     }
-//   }
-// }
+      //snout
+      ellipse(alligator.x + 150, height - 40, 20, 20);
+
+      // Move the alligator
+      alligator.x += 2.5 * currentSpeed;  // Increase speed for visibility
+      // Check if the alligator has moved beyond the canvas
+      if (alligator.x > width + 500) {  // Ensure it fully crosses the screen
+          alligator.visible = false;
+          alligator.x = -100; // Reset position off-screen to the left
+          if (alligator.firstTime) {
+              // After first appearance, set random intervals around one minute
+              alligator.interval = random(45000, 65000); // Randomize interval for next appearances
+              alligator.firstTime = false;
+          }
+          alligator.timer = 0; // Reset timer after it fully exits, ensuring the interval is handled correctly
+      }
+  }
+}
+
+function updateAlligator() {
+  // Only update timer if alligator is not currently visible
+  if (!alligator.visible) {
+    alligator.timer += deltaTime;
+  }
+  
+  // Check if it's time to show the alligator based on the interval
+  if (alligator.timer >= alligator.interval) {
+      alligator.visible = true;
+      alligator.x = -100; // Start off screen to the left
+      alligator.timer = 0; // Reset timer immediately upon visibility to prevent immediate re-triggering
+  }
+}
+
+
 
 let windBase = 0.1;  // Base wind level
 let windGustStrength = 10;
@@ -115,7 +154,7 @@ function draw() {
 
   stroke(0, 0, 80); // Slightly darker blue for texture
   strokeWeight(1); // Thin lines for a subtle effect
-  let waterSpeed = 1; // This should be the same as the grass speed
+  let waterSpeed = 1 * currentSpeed; // This should be the same as the grass speed
   let waterDetail = 0.7; // Determines the 'fineness' of the waves
 
   for (let y = canalTop; y < height; y += 2) {
@@ -128,6 +167,8 @@ function draw() {
 
   drawClouds();
   drawPuffyClouds();
+
+  
 
   if (windGustCounter > 0) {
     // Calculate gust effect using a sine wave for smooth rise and fall
@@ -143,7 +184,7 @@ function draw() {
 
   for (let i = backGrassBlades.length - 1; i >= 0; i--) {
     let blade = backGrassBlades[i];
-    blade.x += 0.2; // Grass movement speed
+    blade.x += 0.2 * currentSpeed; // Grass movement speed
 
     if (blade.x > width) {
       backGrassBlades.splice(i, 1); // Remove grass blade if it moves outside the canvas
@@ -154,7 +195,7 @@ function draw() {
 
   for (let i = middleBackGrassBlades.length - 1; i >= 0; i--) {
     let blade = middleBackGrassBlades[i];
-    blade.x += 0.4; // Grass movement speed
+    blade.x += 0.4 * currentSpeed; // Grass movement speed
 
     if (blade.x > width) {
       middleBackGrassBlades.splice(i, 1); // Remove grass blade if it moves outside the canvas
@@ -165,7 +206,7 @@ function draw() {
 
   for (let i = middleFrontGrassBlades.length - 1; i >= 0; i--) {
     let blade = middleFrontGrassBlades[i];
-    blade.x += .7; // Grass movement speed
+    blade.x += .7 * currentSpeed; // Grass movement speed
 
     if (blade.x > width) {
       middleFrontGrassBlades.splice(i, 1); // Remove grass blade if it moves outside the canvas
@@ -177,7 +218,7 @@ function draw() {
 
   for (let i = grassBlades.length - 1; i >= 0; i--) {
     let blade = grassBlades[i];
-    blade.x += 1; // Grass movement speed
+    blade.x += 1 * currentSpeed; // Grass movement speed
 
     if (blade.x > width) {
       grassBlades.splice(i, 1); // Remove grass blade if it moves outside the canvas
@@ -200,7 +241,8 @@ function draw() {
     addMiddleBackGrassBlade(); // Add new grass blade if needed
   }
 
-
+  drawAlligator()
+  updateAlligator()
 }
 
 
@@ -388,4 +430,12 @@ function addMiddleFrontGrassBlade(initial = false) {
 function toggleFullscreen() {
   let fs = fullscreen();
   fullscreen(!fs);
+}
+
+function mousePressed() {
+  currentSpeed = baseSpeed * speedMultiplier;  // Increase speed by 30%
+}
+
+function mouseReleased() {
+  currentSpeed = baseSpeed;  // Reset to base speed
 }
