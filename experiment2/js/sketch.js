@@ -7,6 +7,7 @@ function setup() {
   let canvasContainer = select('#canvas-container'); // Use select to find the container
   let cvs = createCanvas(canvasContainer.width, canvasContainer.height);
   cvs.parent('canvas-container'); // Attach the canvas to the container
+  wind = 0
   initializeGrass(); // Initialize the grass once in setup
 
   // Resize event to adjust the canvas when window size changes or goes fullscreen
@@ -28,10 +29,10 @@ function setGradient(x, y, w, h, topColor, bottomColor) {
   }
 }
 
-let wind = 1; 
+let wind = 0; 
 let baseSpeed = 1;       // Base speed for grass and water movement
 let currentSpeed = 1;    // Current speed, starts at base speed
-let speedMultiplier = 1.7;  // Multiplier to increase speed by 30%
+let speedMultiplier = 2.1;  // Multiplier to increase speed
 
 let cloudNoiseOffset = 0; // Offset for cloud noise
 
@@ -66,7 +67,7 @@ function drawClouds() {
 }
 
 let alligator = {
-  x: -250,  // Start off-screen to the left
+  x: -450,  // Start off-screen to the left
   visible: false,
   timer: 0,
   interval: 10000,  // Initial short interval for first appearance
@@ -95,7 +96,7 @@ function drawAlligator() {
       // Check if the alligator has moved beyond the canvas
       if (alligator.x > width + 500) {  // Ensure it fully crosses the screen
           alligator.visible = false;
-          alligator.x = -100; // Reset position off-screen to the left
+          alligator.x = -450; // Reset position off-screen to the left
           if (alligator.firstTime) {
               // After first appearance, set random intervals around one minute
               alligator.interval = random(45000, 65000); // Randomize interval for next appearances
@@ -115,7 +116,7 @@ function updateAlligator() {
   // Check if it's time to show the alligator based on the interval
   if (alligator.timer >= alligator.interval) {
       alligator.visible = true;
-      alligator.x = -100; // Start off screen to the left
+      alligator.x = -450; // Start off screen to the left
       alligator.timer = 0; // Reset timer immediately upon visibility to prevent immediate re-triggering
   }
 }
