@@ -204,81 +204,38 @@ function initializeGrass() {
 
 }
 
+
+
+
 function drawFrontGrass(x, baseY, height, noiseOffset, windStrength) {
-  // Original grass drawing
-  drawGrassBlade(x, baseY, height, noiseOffset, windStrength, 2, color(34, 139, 34)); // Normal grass
-  // Reflection drawing
-  drawGrassReflection(x, baseY, height, noiseOffset, windStrength);
-}
-
-function drawGrassBlade(x, baseY, height, noiseOffset, windStrength, strokeWeight, color) {
   let grassBottomColor = color(245, 222, 179); // Beige color for grass bottom
-  let grassTopColor = color; // Dynamic color for grass top
+  let grassTopColor = color(34, 139, 34); // Green color for grass top
 
+  // Calculate the color based on the height of the grass
   let inter = map(height, 50, 100, 0, 1); // Assumes grass height ranges from 50 to 100
   let bladeColor = lerpColor(grassBottomColor, grassTopColor, inter);
   stroke(bladeColor);
-  strokeWeight(strokeWeight);
+  strokeWeight(2);
 
-  let controlX1 = x + noise(noiseOffset) * 20 - 10 + 5 * windStrength;
-  let controlY1 = baseY - height * 0.3 + noise(noiseOffset + 5) * 10;
-  let controlX2 = x - noise(noiseOffset + 10) * 20 + 10 - 5 * windStrength;
-  let controlY2 = baseY - height * 0.6 + noise(noiseOffset + 15) * 10;
-  let endX = x;
-  let endY = baseY - height;
-
+  // Adjust control points for a more natural, tapered curve
+  let controlX1 = x + noise(noiseOffset) * 20 - 10 + 5 * windStrength; // Modified by wind
+  let controlY1 = baseY - height * 0.3 + noise(noiseOffset + 5) * 10; 
+  let controlX2 = x - noise(noiseOffset + 10) * 20 + 10 - 5 * windStrength; // Modified by wind
+  let controlY2 = baseY - height * 0.6 + noise(noiseOffset + 15) * 10; 
+  let endX = x; 
+  let endY = baseY - height; 
+  
+  // Draw the curved grass blade
   noFill();
   beginShape();
-  curveVertex(x, baseY);
-  curveVertex(x, baseY);
-  curveVertex(controlX1, controlY1);
-  curveVertex(controlX2, controlY2);
-  curveVertex(endX, endY);
-  curveVertex(endX, endY);
+  curveVertex(x, baseY); 
+  curveVertex(x, baseY); 
+  curveVertex(controlX1, controlY1); 
+  curveVertex(controlX2, controlY2); 
+  curveVertex(endX, endY); 
+  curveVertex(endX, endY); 
   endShape();
 }
-
-function drawGrassReflection(x, baseY, height, noiseOffset, windStrength) {
-  let reflectionHeight = height * 0.5; // Reflection should be shorter
-  let reflectionBaseY = baseY + 20; // Offset reflection down a bit
-  drawGrassBlade(x, reflectionBaseY, reflectionHeight, noiseOffset, windStrength, 1, color(34, 139, 34, 100)); // More transparent
-
-  // Additional blur effect
-  for (let i = 1; i <= 3; i++) {
-    drawGrassBlade(x + i, reflectionBaseY + i, reflectionHeight, noiseOffset, windStrength, 1, color(34, 139, 34, 50 / i));
-    drawGrassBlade(x - i, reflectionBaseY + i, reflectionHeight, noiseOffset, windStrength, 1, color(34, 139, 34, 50 / i));
-  }
-}
-
-// function drawFrontGrass(x, baseY, height, noiseOffset, windStrength) {
-//   let grassBottomColor = color(245, 222, 179); // Beige color for grass bottom
-//   let grassTopColor = color(34, 139, 34); // Green color for grass top
-
-//   // Calculate the color based on the height of the grass
-//   let inter = map(height, 50, 100, 0, 1); // Assumes grass height ranges from 50 to 100
-//   let bladeColor = lerpColor(grassBottomColor, grassTopColor, inter);
-//   stroke(bladeColor);
-//   strokeWeight(2);
-
-//   // Adjust control points for a more natural, tapered curve
-//   let controlX1 = x + noise(noiseOffset) * 20 - 10 + 5 * windStrength; // Modified by wind
-//   let controlY1 = baseY - height * 0.3 + noise(noiseOffset + 5) * 10; 
-//   let controlX2 = x - noise(noiseOffset + 10) * 20 + 10 - 5 * windStrength; // Modified by wind
-//   let controlY2 = baseY - height * 0.6 + noise(noiseOffset + 15) * 10; 
-//   let endX = x; 
-//   let endY = baseY - height; 
-  
-//   // Draw the curved grass blade
-//   noFill();
-//   beginShape();
-//   curveVertex(x, baseY); 
-//   curveVertex(x, baseY); 
-//   curveVertex(controlX1, controlY1); 
-//   curveVertex(controlX2, controlY2); 
-//   curveVertex(endX, endY); 
-//   curveVertex(endX, endY); 
-//   endShape();
-// }
 
 function drawBackGrass(x, baseY, height, noiseOffset, windStrength) {
   let grassBottomColor = color(245, 222, 179); // Beige color for grass bottom
