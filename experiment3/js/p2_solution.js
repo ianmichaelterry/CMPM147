@@ -176,6 +176,10 @@ function createExitPath(grid, rooms) {
   createPathway(grid, lastRoom[0], lastRoom[1], pathEnd[0], pathEnd[1]);
 }
 
+function drawBaseTile(x, y) {
+    let baseTileIndex = { ti: baseTi, tj: baseTj }; // Indices for your base tile
+    drawTileFromSet(x, y, baseTileIndex.ti, baseTileIndex.tj);
+}
   
   function drawGrid(grid) {
     background(128); // Assuming a grey background is desired
