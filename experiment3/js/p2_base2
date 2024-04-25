@@ -2,7 +2,7 @@
 
 /* global generateGrid drawGrid */
 
-let seed = 3;
+let seed = 0;
 let tilesetImage;
 let currentGrid = [];
 let numRows, numCols;
