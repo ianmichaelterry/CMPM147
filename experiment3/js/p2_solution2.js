@@ -229,17 +229,18 @@ function autotileWall(grid, x, y) {
   
   if(isInteriorCorner){
     if (grid[y][x+1] && grid[y+1][x] && grid[y][x+1] === '_' && grid[y+1][x] === '_'){
-      tileIndex = { ti: 6/* corner bottom-right */, tj: 5/* index */ };
+      tileIndex = { ti: 7/* corner bottom-right */, tj: 23/* index */ };
     }else if (grid[y][x-1] && grid[y+1][x] && grid[y][x-1] === '_' && grid[y+1][x] === '_'){
-      tileIndex = { ti: 4/* corner bottom-right */, tj: 5/* index */ };
+      tileIndex = { ti: 5/* corner bottom-right */, tj: 23/* index */ };
     }else if (grid[y][x] && grid[y-1][x] && grid[y][x+1] === '_' && grid[y-1][x] === '_'){
-      tileIndex = { ti: 6/* corner bottom-right */, tj: 3/* index */ };
+      tileIndex = { ti: 7/* corner bottom-right */, tj: 21/* index */ };
     }else if (grid[y][x-1] && grid[y-1][x] && grid[y][x-1] === '_' && grid[y-1][x] === '_'){
-      tileIndex = { ti: 4/* corner bottom-right */, tj: 3/* index */ };
+      tileIndex = { ti: 5/* corner bottom-right */, tj: 21/* index */ };
     }
   
 
   }
+
 
   return tileIndex;
 }
@@ -265,22 +266,22 @@ function autotileWall(grid, x, y) {
             tj = floor(random(21,24)); // Tile index for background (tj) in the tileset image
             break;
           case ".": // Wall tile
-            placeTile(i, j, 0, 14)
+            placeTile(i, j, floor(random(21,24)), floor(random(21,24)))
             let wallIndices = autotileWall(grid, j, i); // Get the autotile indices for the wall
             ti = wallIndices.ti; // Set the tile index for the wall
             tj = wallIndices.tj; // Set the tile index for the wall
             break;
           case " ": // Floor tile
-            ti = floor(random(4)); // Tile index for floor (ti) in the tileset image
-            tj = 14; // Tile index for floor (tj) in the tileset image
+            ti = floor(random(21,24)); // Tile index for floor (ti) in the tileset image
+            tj = floor(random(21,24));; // Tile index for floor (tj) in the tileset image
             break;
           case "T": // Closed treasure chest
-            placeTile(i, j, 0, 14)
+            placeTile(i, j, floor(random(21,24)), floor(random(21,24)))
             ti = 2; // Set the index for closed chest
             tj = 28;
             break;
           case "O": // Open treasure chest
-            placeTile(i, j, 0, 14)
+            placeTile(i, j, floor(random(21,24)), floor(random(21,24)))
             ti = 5; // Set the index for open chest
             tj = 28;
             break;

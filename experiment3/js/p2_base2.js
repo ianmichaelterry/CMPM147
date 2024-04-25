@@ -52,6 +52,7 @@ function stringToGrid(str) {
   return grid;
 }
 
+
 function setup() {
   numCols = select("#asciiBox").attribute("rows") | 0;
   numRows = select("#asciiBox").attribute("cols") | 0;
@@ -62,14 +63,32 @@ function setup() {
   select("#reseedButton").mousePressed(reseed);
   select("#asciiBox").input(reparseGrid);
 
+ 
+  frameRate(30); // Higher frame rate for smoother lighting changes
+  noiseDetail(1); // Lower complexity of noise for more gentle changes
   reseed();
 }
 
+function drawFlameLighting() {
+  // Calculate the light intensity based on noise for a flickering effect
+  let lightIntensity = noise(frameCount * 0.75) * 55;  // Slower and smoother
+
+  // Apply a uniform semi-transparent overlay to simulate the flame lighting
+  fill(255, 140, 0, lightIntensity); // Orange color with variable opacity
+  rect(0, 0, width, height); // Cover the entire canvas
+}
+
+function draw() {
+  randomSeed(seed);
+  drawGrid(currentGrid); // Draw the grid first
+  drawFlameLighting(); // Then overlay the lighting effect
+}
 
 
 function draw() {
   randomSeed(seed);
   drawGrid(currentGrid);
+  drawFlameLighting();
 }
 
 function placeTile(i, j, ti, tj) {
