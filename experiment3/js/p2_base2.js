@@ -9,7 +9,7 @@ let numRows, numCols;
 
 function preload() {
   tilesetImage = loadImage(
-    "https://cdn.glitch.com/25101045-29e2-407a-894c-e0243cd8c7c6%2FtilesetP8.png?v=1611654020438"
+    "https://cdn.glitch.com/25101045-29e2-407a-894c-e0243cd8c7c6%2Ftileset.png?v=1611654020438"
   );
 }
 
@@ -64,6 +64,7 @@ function setup() {
 
   reseed();
 }
+
 
 
 function draw() {

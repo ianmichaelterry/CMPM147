@@ -223,7 +223,7 @@ function autotileWall(grid, x, y) {
     tileIndex = { ti: 7/* corner bottom-left */, tj: 4/* index */ };
     isInteriorCorner = false;
   } else if (down && right) {
-    tileIndex = { ti: 7/* corner bottom-right */, tj: 3/* index */ };
+    tileIndex = { ti: 8/* corner bottom-right */, tj: 4/* index */ };
     isInteriorCorner = false;
   }
   

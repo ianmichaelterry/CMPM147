@@ -63,12 +63,30 @@ function setup() {
   select("#asciiBox").input(reparseGrid);
 
   reseed();
+
+  shadowOffset = 0; // Initialize shadow offset
 }
 
+
+function drawShadows() {
+  noStroke();
+  fill(0, 50); // Semi-transparent black
+  for (let i = 0; i < numRows; i++) {
+    for (let j = 0; j < numCols; j++) {
+      // Use the y-coordinate and shadowOffset for noise to create vertical movement
+      let noiseVal = noise(j * 0.1, shadowOffset + i * 0.1);
+      if (noiseVal > 0.5) { // Threshold to create patches of shadows
+        rect(j * 16, i * 16, 16, 16); // Drawing the shadow patches based on grid size
+      }
+    }
+  }
+}
 
 function draw() {
   randomSeed(seed);
   drawGrid(currentGrid);
+  drawShadows(); 
+  shadowOffset += 0.0015; // Increment to move the shadows
 }
 
 function placeTile(i, j, ti, tj) {

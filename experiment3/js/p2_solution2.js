@@ -199,16 +199,16 @@ function autotileWall(grid, x, y) {
 
   // Edge tiles
   if (up && !right && !down && !left) {
-    tileIndex = { ti: 5/* edge top */, tj: 5/* index */ };
+    tileIndex = { ti: 6/* edge top */, tj:23/* index */ };
     isInteriorCorner = false;
   } else if (!up && right && !down && !left) {
-    tileIndex = { ti: 4/* edge right */, tj: 4 /* index */ };
+    tileIndex = { ti: 5/* edge right */, tj: 22 /* index */ };
     isInteriorCorner = false;
   } else if (!up && !right && down && !left) {
-    tileIndex = { ti: 5 /* edge bottom */, tj:3 /* index */ };
+    tileIndex = { ti: 6 /* edge bottom */, tj:21 /* index */ };
     isInteriorCorner = false;
   } else if (!up && !right && !down && left) {
-    tileIndex = { ti: 6 /* edge left */, tj: 4/* index */ };
+    tileIndex = { ti: 7 /* edge left */, tj: 22/* index */ };
     isInteriorCorner = false;
   }
 
@@ -223,7 +223,7 @@ function autotileWall(grid, x, y) {
     tileIndex = { ti: 7/* corner bottom-left */, tj: 4/* index */ };
     isInteriorCorner = false;
   } else if (down && right) {
-    tileIndex = { ti: 7/* corner bottom-right */, tj: 3/* index */ };
+    tileIndex = { ti: 8/* corner bottom-right */, tj: 4/* index */ };
     isInteriorCorner = false;
   }
   
@@ -261,32 +261,8 @@ function autotileWall(grid, x, y) {
         // Check the character and set the tile indices accordingly
         switch (tileChar) {
           case "_": // Background tile
-            ti = floor(random(4)); // Tile index for background (ti) in the tileset image
-            tj = 3; // Tile index for background (tj) in the tileset image
-            if (floor(random(35)) == 10){
-              placeTile(i, j, 0, 3)
-              ti=14
-              tj=0
-            }else if(floor(random(400))==10){
-              placeTile(i, j, 0, 3)
-              ti=26
-              tj=1
-
-            }else if(floor(random(400))==10){
-              placeTile(i, j, 0, 3)
-              ti=26
-              tj=2
-            
-            }else if(floor(random(400))==10){
-              placeTile(i, j, 0, 3)
-              ti=26
-              tj=3
-            
-            }else if(floor(random(400))==10){
-              placeTile(i, j, 0, 3)
-              ti=26
-              tj=0
-            }
+            ti = floor(random(1,4)); // Tile index for background (ti) in the tileset image
+            tj = floor(random(21,24)); // Tile index for background (tj) in the tileset image
             break;
           case ".": // Wall tile
             placeTile(i, j, 0, 14)
