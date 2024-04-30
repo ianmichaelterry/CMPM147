@@ -249,8 +249,11 @@ function p3_drawTile(i, j) {
   let rightColor = lerpColor(topColor, color(255), 0.1); // Right side lighter
 
   push();
-  translate(0, -totalElevation * 0.5); // Vertical shift based on elevation
-
+  if (totalElevation<300){
+    translate(0, -300 * 0.5); // Vertical shift based on elevation
+  }else{
+    translate(0, -totalElevation * 0.5); // Vertical shift based on elevation
+  }
   // Draw top face
   fill(topColor);
   beginShape();
