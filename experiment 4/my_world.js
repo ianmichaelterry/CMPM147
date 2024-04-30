@@ -159,26 +159,35 @@ function p3_drawBefore() {}
 //     pop();
 //   }
 
+
+// color v1
 function p3_drawTile(i, j) {
   noStroke();
+
+  // Use hash to generate a consistent seed for randomness in colors based on position
+  let seed = XXH.h32(`${i}_${j}`, worldSeed).toNumber();
+  randomSeed(seed);
+
   // Combine two layers of noise with increased elevation impact
   let baseElevation = noise(i * 0.05, j * 0.05) * 0.75; // Larger scale variations
   let detailElevation = noise(i * 0.2, j * 0.2) * 0.25; // Smaller scale, more detail
-  let totalElevation = (baseElevation + detailElevation) * 500; // Scale up the maximum elevation
-
+  let totalElevation = (baseElevation + detailElevation) * 700; // Scale up the maximum elevation
+  if (totalElevation >600){
+    totalElevation = totalElevation *1.2
+  }
   // Set colors based on elevation
-  if (totalElevation < 100) {
+  if (totalElevation < 300) {
       // Water
-      fill(0, 0, 255 - totalElevation); // Darker blue at deeper water
-  } else if (totalElevation < 200) {
+      fill(0, 0, 0 + (0.4*totalElevation)); // Darker blue at deeper water
+  } else if (totalElevation < 320) {
       // Beach
-      fill(210, 180, 140); // Sandy tan
-  } else if (totalElevation < 400) {
+      fill(210+ random(-20, 20), 180+ random(-10, 10), 140+ random(-10, 10)); // Sandy tan
+  } else if (totalElevation < 430) {
       // Vegetation
-      fill(34, 139, 34); // Forest green
-  } else if (totalElevation < 450) {
+      fill(34+ random(-20, 20), 139+ random(-20, 20), 34+ random(-20, 20)); // Forest green
+  } else if (totalElevation < 600) {
       // Mountain
-      fill(169, 169, 169); // Dark grey
+      fill(169+ random(-2, 10), 169+ random(-2, 10), 169+ random(-2, 10)); // Dark grey
   } else {
       // Snow caps
       fill(255); // White
@@ -205,6 +214,59 @@ function p3_drawTile(i, j) {
 
   pop();
 }
+
+// function p3_drawTile(i, j) {
+//   noStroke();
+//   // Use hash to generate a consistent seed for randomness in colors based on position
+//   let seed = XXH.h32(`${i}_${j}`, worldSeed).toNumber();
+//   randomSeed(seed);
+  
+//   // Combine two layers of noise for elevation
+//   let baseElevation = noise(i * 0.1, j * 0.1) * 0.6; // Larger areas, less elevation impact
+//   let detailElevation = noise(i * 0.5, j * 0.5) * 0.4; // Smaller, more frequent changes
+//   let totalElevation = (baseElevation + detailElevation) * 800; // Scale up the maximum elevation for more extremes
+
+//   // Color settings based on elevation
+//   if (totalElevation < 150) {
+//       // Water: varying shades of blue
+//       fill(0, 0, 200 + random(-20, 55));
+//   } else if (totalElevation < 250) {
+//       // Beach: sandy colors with variation
+//       fill(210 + random(-20, 20), 180 + random(-10, 10), 140 + random(-10, 10));
+//   } else if (totalElevation < 500) {
+//       // Vegetation: varying shades of green
+//       fill(34 + random(-10, 10), 139 + random(-20, 20), 34 + random(-10, 10));
+//   } else if (totalElevation < 650) {
+//       // Mountain: darker grey
+//       fill(100 + random(-20, 60), 100 + random(-20, 60), 100 + random(-20, 60));
+//   } else {
+//       // Snow caps: pure white with slight grey shading
+//       fill(255, 255, 255 - random(0, 10));
+//   }
+
+//   push();
+//   translate(0, -totalElevation * 0.5); // Exaggerate the elevation by shifting tiles up based on their elevation
+
+//   beginShape();
+//   vertex(-tw, 0);
+//   vertex(0, th);
+//   vertex(tw, 0);
+//   vertex(0, -th);
+//   endShape(CLOSE);
+
+//   let n = clicks[[i, j]] | 0;
+//   if (n % 2 == 1) {
+//     fill(0, 0, 0, 32);
+//     ellipse(0, 0, 10, 5);
+//     translate(0, -10);
+//     fill(255, 255, 100, 128);
+//     ellipse(0, 0, 10, 10);
+//   }
+
+//   pop();
+// }
+
+
 
 
 
