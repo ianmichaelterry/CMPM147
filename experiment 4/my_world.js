@@ -226,9 +226,6 @@ function p3_drawTile(i, j) {
   let baseElevation = noise(i * 0.05, j * 0.05) * 0.75; // Base layer of noise for elevation
   let detailElevation = noise(i * 0.2, j * 0.2) * 0.25; // Detail layer for elevation
   let totalElevation = (baseElevation + detailElevation) * 700; // Scale the elevation
-  if (totalElevation > 600) {
-      totalElevation = totalElevation * 1.2; // Scale mountains more dramatically
-  }
 
   // Determine the top color based on elevation
   let topColor;
@@ -236,9 +233,9 @@ function p3_drawTile(i, j) {
       topColor = color(0, 0, 0 + (0.4 * totalElevation)); // Water
   } else if (totalElevation < 320) {
       topColor = color(210 + random(-20, 20), 180 + random(-10, 10), 140 + random(-10, 10)); // Beach
-  } else if (totalElevation < 430) {
+  } else if (totalElevation < 390) {
       topColor = color(34 + random(-20, 20), 139 + random(-20, 20), 34 + random(-20, 20)); // Vegetation
-  } else if (totalElevation < 600) {
+  } else if (totalElevation < 460) {
       topColor = color(169 + random(-2, 10), 169 + random(-2, 10), 169 + random(-2, 10)); // Mountain
   } else {
       topColor = color(255); // Snow caps
@@ -249,8 +246,14 @@ function p3_drawTile(i, j) {
   let rightColor = lerpColor(topColor, color(255), 0.1); // Right side lighter
 
   push();
+
+  // make mountains more extreme
+  if (totalElevation >= 390) {
+    totalElevation =  totalElevation + ((totalElevation-390)*2)
+  }
+
   if (totalElevation<300){
-    translate(0, -300 * 0.5); // Vertical shift based on elevation
+    translate(0, -300 * 0.5); // make water all the same height, with varying levels of depths 
   }else{
     translate(0, -totalElevation * 0.5); // Vertical shift based on elevation
   }
