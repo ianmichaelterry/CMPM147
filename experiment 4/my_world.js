@@ -160,42 +160,99 @@ function p3_drawBefore() {}
 //   }
 
 
-// color v1
+// color v2
+// function p3_drawTile(i, j) {
+//   noStroke();
+
+//   // Use hash to generate a consistent seed for randomness in colors based on position
+//   let seed = XXH.h32(`${i}_${j}`, worldSeed).toNumber();
+//   randomSeed(seed);
+
+//   // Combine two layers of noise with increased elevation impact
+//   let baseElevation = noise(i * 0.05, j * 0.05) * 0.75; // Larger scale variations
+//   let detailElevation = noise(i * 0.2, j * 0.2) * 0.25; // Smaller scale, more detail
+//   let totalElevation = (baseElevation + detailElevation) * 700; // Scale up the maximum elevation
+//   if (totalElevation >600){
+//     totalElevation = totalElevation *1.2
+//   }
+//   // Set colors based on elevation
+//   if (totalElevation < 300) {
+//       // Water
+//       fill(0, 0, 0 + (0.4*totalElevation)); // Darker blue at deeper water
+//   } else if (totalElevation < 320) {
+//       // Beach
+//       fill(210+ random(-20, 20), 180+ random(-10, 10), 140+ random(-10, 10)); // Sandy tan
+//   } else if (totalElevation < 430) {
+//       // Vegetation
+//       fill(34+ random(-20, 20), 139+ random(-20, 20), 34+ random(-20, 20)); // Forest green
+//   } else if (totalElevation < 600) {
+//       // Mountain
+//       fill(169+ random(-2, 10), 169+ random(-2, 10), 169+ random(-2, 10)); // Dark grey
+//   } else {
+//       // Snow caps
+//       fill(255); // White
+//   }
+
+//   push();
+//   translate(0, -totalElevation * 0.5); // Increase vertical shift to exaggerate the elevation
+
+//   beginShape();
+//   vertex(-tw, 0);
+//   vertex(0, th);
+//   vertex(tw, 0);
+//   vertex(0, -th);
+//   endShape(CLOSE);
+
+//   let n = clicks[[i, j]] | 0;
+//   if (n % 2 == 1) {
+//     fill(0, 0, 0, 32);
+//     ellipse(0, 0, 10, 5);
+//     translate(0, -10);
+//     fill(255, 255, 100, 128);
+//     ellipse(0, 0, 10, 10);
+//   }
+
+//   pop();
+// }
+
 function p3_drawTile(i, j) {
   noStroke();
 
-  // Use hash to generate a consistent seed for randomness in colors based on position
+  // Generate consistent color seed based on tile position
   let seed = XXH.h32(`${i}_${j}`, worldSeed).toNumber();
   randomSeed(seed);
 
-  // Combine two layers of noise with increased elevation impact
-  let baseElevation = noise(i * 0.05, j * 0.05) * 0.75; // Larger scale variations
-  let detailElevation = noise(i * 0.2, j * 0.2) * 0.25; // Smaller scale, more detail
-  let totalElevation = (baseElevation + detailElevation) * 700; // Scale up the maximum elevation
-  if (totalElevation >600){
-    totalElevation = totalElevation *1.2
+  // Elevation calculation
+  let baseElevation = noise(i * 0.05, j * 0.05) * 0.75; // Base layer of noise for elevation
+  let detailElevation = noise(i * 0.2, j * 0.2) * 0.25; // Detail layer for elevation
+  let totalElevation = (baseElevation + detailElevation) * 700; // Scale the elevation
+  if (totalElevation > 600) {
+      totalElevation = totalElevation * 1.2; // Scale mountains more dramatically
   }
-  // Set colors based on elevation
+
+  // Determine the top color based on elevation
+  let topColor;
   if (totalElevation < 300) {
-      // Water
-      fill(0, 0, 0 + (0.4*totalElevation)); // Darker blue at deeper water
+      topColor = color(0, 0, 0 + (0.4 * totalElevation)); // Water
   } else if (totalElevation < 320) {
-      // Beach
-      fill(210+ random(-20, 20), 180+ random(-10, 10), 140+ random(-10, 10)); // Sandy tan
+      topColor = color(210 + random(-20, 20), 180 + random(-10, 10), 140 + random(-10, 10)); // Beach
   } else if (totalElevation < 430) {
-      // Vegetation
-      fill(34+ random(-20, 20), 139+ random(-20, 20), 34+ random(-20, 20)); // Forest green
+      topColor = color(34 + random(-20, 20), 139 + random(-20, 20), 34 + random(-20, 20)); // Vegetation
   } else if (totalElevation < 600) {
-      // Mountain
-      fill(169+ random(-2, 10), 169+ random(-2, 10), 169+ random(-2, 10)); // Dark grey
+      topColor = color(169 + random(-2, 10), 169 + random(-2, 10), 169 + random(-2, 10)); // Mountain
   } else {
-      // Snow caps
-      fill(255); // White
+      topColor = color(255); // Snow caps
   }
+
+  // Light source adjustments for side colors
+  let leftColor = lerpColor(topColor, color(0), 0.3); // Left side darker
+  let rightColor = lerpColor(topColor, color(255), 0.1); // Right side lighter
 
   push();
-  translate(0, -totalElevation * 0.5); // Increase vertical shift to exaggerate the elevation
+  translate(0, -totalElevation * 0.5); // Vertical shift based on elevation
 
+  // Draw top face
+  fill(topColor);
   beginShape();
   vertex(-tw, 0);
   vertex(0, th);
@@ -203,17 +260,27 @@ function p3_drawTile(i, j) {
   vertex(0, -th);
   endShape(CLOSE);
 
-  let n = clicks[[i, j]] | 0;
-  if (n % 2 == 1) {
-    fill(0, 0, 0, 32);
-    ellipse(0, 0, 10, 5);
-    translate(0, -10);
-    fill(255, 255, 100, 128);
-    ellipse(0, 0, 10, 10);
-  }
+  // Draw left face
+  fill(leftColor);
+  beginShape();
+  vertex(-tw, 0);
+  vertex(0, th);
+  vertex(0, th + totalElevation * 0.5);
+  vertex(-tw, totalElevation * 0.5);
+  endShape(CLOSE);
+
+  // Draw right face
+  fill(rightColor);
+  beginShape();
+  vertex(tw, 0);
+  vertex(0, th);
+  vertex(0, th + totalElevation * 0.5);
+  vertex(tw, totalElevation * 0.5);
+  endShape(CLOSE);
 
   pop();
 }
+
 
 // function p3_drawTile(i, j) {
 //   noStroke();
