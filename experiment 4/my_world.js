@@ -44,8 +44,9 @@ let [tw, th] = [p3_tileWidth(), p3_tileHeight()];
 let clicks = {};
 
 function p3_tileClicked(i, j) {
-  let key = [i, j];
-  clicks[key] = 1 + (clicks[key] | 0);
+  let key = `${i}_${j}`; ;
+  clicks[key] = 1 + (clicks[key] | 0)+30;
+  redraw()
 }
 
 function p3_drawBefore() {}
@@ -226,6 +227,9 @@ function p3_drawTile(i, j) {
   let baseElevation = noise(i * 0.05, j * 0.05) * 0.75; // Base layer of noise for elevation
   let detailElevation = noise(i * 0.2, j * 0.2) * 0.25; // Detail layer for elevation
   let totalElevation = (baseElevation + detailElevation) * 700; // Scale the elevation
+  let clickElevation = clicks[`${i}_${j}`] || 0;
+  
+  totalElevation = totalElevation+clickElevation;
 
   // Determine the top color based on elevation
   let topColor;

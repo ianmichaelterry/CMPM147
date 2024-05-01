@@ -30,6 +30,16 @@ function worldToCamera([world_x, world_y], [camera_x, camera_y]) {
   return [i, j];
 }
 
+// function screenToWorld(mx, my) {
+//   let correctedY = my + (camera_offset.y % (tile_height_step_main * 2));
+//   let correctedX = mx - camera_offset.x;
+
+//   let baseX = (correctedX / (tile_width_step_main * 2) + correctedY / (tile_height_step_main * 2)) / 2;
+//   let baseY = (correctedY / (tile_height_step_main * 2) - correctedX / (tile_width_step_main * 2)) / 2;
+
+//   return [Math.floor(baseX), Math.floor(baseY)];
+// }
+
 function tileRenderingOrder(offset) {
   return [offset[1] - offset[0], offset[0] + offset[1]];
 }
@@ -99,7 +109,7 @@ function rebuildWorld(key) {
 
 function mouseClicked() {
   let world_pos = screenToWorld(
-    [0 - mouseX, mouseY],
+    [0 - mouseX, mouseY+140],
     [camera_offset.x, camera_offset.y]
   );
 
@@ -108,6 +118,7 @@ function mouseClicked() {
   }
   return false;
 }
+
 
 function draw() {
   // Keyboard controls!
@@ -147,7 +158,7 @@ function draw() {
   let overdraw = 0.1;
 
   let y0 = Math.floor((0 - overdraw) * tile_rows);
-  let y1 = Math.floor((1 + overdraw) * tile_rows)+10;
+  let y1 = Math.floor((1 + overdraw) * tile_rows)+20;
   let x0 = Math.floor((0 - overdraw) * tile_columns);
   let x1 = Math.floor((1 + overdraw) * tile_columns);
 
