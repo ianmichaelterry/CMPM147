@@ -86,14 +86,17 @@ function setup() {
   label.html("World key: ");
   label.parent("container");
 
-  let input = createInput("xyzzy");
+  let input = createInput("Dante");
   input.parent(label);
   input.input(() => {
     rebuildWorld(input.value());
   });
 
-  createP("Arrow keys scroll. Clicking changes tiles.").parent("container");
-
+  if (window.location.pathname.includes('index3.html')) {
+    createP("Arrow Keys Scroll Clicking lets you listen to Heaven.").parent("container");
+  } else {
+    createP("Arrow keys scroll. Clicking makes mountains.").parent("container");
+  }
   rebuildWorld(input.value());
 }
 

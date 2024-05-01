@@ -20,12 +20,6 @@ function p3_setup() {}
 
 let worldSeed;
 
-// function p3_worldKeyChanged(key) {
-//   worldSeed = XXH.h32(key, 0);
-//   noiseSeed(worldSeed);
-//   randomSeed(worldSeed);
-// }
-
 function p3_worldKeyChanged(key) {
     worldSeed = XXH.h32(key, 0).toString(16);
     noiseSeed(parseInt(worldSeed, 16));
@@ -43,178 +37,62 @@ let [tw, th] = [p3_tileWidth(), p3_tileHeight()];
 
 let clicks = {};
 
+// function p3_tileClicked(i, j) {
+//   let key = `${i}_${j}`; ;
+//   clicks[key] = 1 + (clicks[key] | 0)+30;
+//   redraw()
+// }
+
 function p3_tileClicked(i, j) {
-  let key = `${i}_${j}`; ;
-  clicks[key] = 1 + (clicks[key] | 0)+30;
-  redraw()
+  let primaryIncrease = 10;
+  let secondaryIncrease = 5;
+  let tertiaryIncrease = 2;
+
+  // Function to safely add elevation to a tile, ensuring keys are correctly formatted and initialized
+  function addElevation(x, y, increase) {
+    let key = `${x}_${y}`;
+    clicks[key] = (clicks[key] || 0) + increase;
+  }
+
+  // Update the clicked tile
+  addElevation(i, j, primaryIncrease);
+
+  // Coordinates of directly adjacent tiles
+  let neighbors = [
+    [i + 1, j], [i - 1, j], // horizontal neighbors
+    [i, j + 1], [i, j - 1], // vertical neighbors
+    [i + 1, j + 1], [i - 1, j - 1], // diagonal neighbors
+    [i + 1, j - 1], [i - 1, j + 1]
+  ];
+
+  // Update directly adjacent tiles
+  neighbors.forEach(([ni, nj]) => {
+    addElevation(ni, nj, secondaryIncrease);
+
+    // Coordinates of secondary neighbors around each directly adjacent tile
+    let secondaryNeighbors = [
+      [ni + 1, nj], [ni - 1, nj],
+      [ni, nj + 1], [ni, nj - 1],
+      [ni + 1, nj + 1], [ni - 1, nj - 1],
+      [ni + 1, nj - 1], [ni - 1, nj + 1]
+    ];
+
+    // Update secondary neighbors
+    secondaryNeighbors.forEach(([nni, nnj]) => {
+      if (nni === i && nnj === j) return; // Exclude the center tile
+      addElevation(nni, nnj, tertiaryIncrease);
+    });
+  });
+
+  redraw(); // Request a redraw of the sketch to reflect elevation changes
 }
+
 
 function p3_drawBefore() {}
 
-// function p3_drawTile(i, j) {
-//   noStroke();
-
-//   if (XXH.h32("tile:" + [i, j], worldSeed) % 4 == 0) {
-//     fill(240, 200);
-//   } else {
-//     fill(255, 200);
-//   }
-
-//   push();
-
-//   beginShape();
-//   vertex(-tw, 0);
-//   vertex(0, th);
-//   vertex(tw, 0);
-//   vertex(0, -th);
-//   endShape(CLOSE);
-
-//   let n = clicks[[i, j]] | 0;
-//   if (n % 2 == 1) {
-//     fill(0, 0, 0, 32);
-//     ellipse(0, 0, 10, 5);
-//     translate(0, -10);
-//     fill(255, 255, 100, 128);
-//     ellipse(0, 0, 10, 10);
-//   }
-
-//   pop();
-// }
-
-// function p3_drawTile(i, j) {
-//     noStroke();
-//     let elevation = noise(i * 0.1, j * 0.1) * 255; // Scale noise result to get elevation
-    
-//     // Elevation-based color gradient
-//     fill(elevation, 200 - elevation * 0.5, 100 + elevation * 0.5);
-    
-//     push();
-//     translate(0, -elevation * 0.25); // Simulate elevation by shifting the tile upwards
-  
-//     beginShape();
-//     vertex(-tw, 0);
-//     vertex(0, th);
-//     vertex(tw, 0);
-//     vertex(0, -th);
-//     endShape(CLOSE);
-  
-//     let n = clicks[[i, j]] | 0;
-//     if (n % 2 == 1) {
-//       fill(0, 0, 0, 32);
-//       ellipse(0, 0, 10, 5);
-//       translate(0, -10);
-//       fill(255, 255, 100, 128);
-//       ellipse(0, 0, 10, 10);
-//     }
-  
-//     pop();
-//   }
-
-// function p3_drawSelectedTile(i, j) {
-//   noFill();
-//   stroke(0, 255, 0, 128);
-
-//   beginShape();
-//   vertex(-tw, 0);
-//   vertex(0, th);
-//   vertex(tw, 0);
-//   vertex(0, -th);
-//   endShape(CLOSE);
-
-//   noStroke();
-//   fill(0);
-//   text("tile " + [i, j], 0, 0);
-// }
 
 
-//best one so far
-// function p3_drawTile(i, j) {
-//     noStroke();
-//     // Combine two layers of noise with increased elevation impact
-//     let baseElevation = noise(i * 0.05, j * 0.05) * 0.75; // Larger scale variations
-//     let detailElevation = noise(i * 0.2, j * 0.2) * 0.25; // Smaller scale, more detail
-//     let totalElevation = (baseElevation + detailElevation) * 500; // Scale up the maximum elevation
-  
-//     // Elevation-based color gradient, more dynamic
-//     fill(totalElevation, 200 - totalElevation * 0.5, 100 + totalElevation * 0.5);
-  
-//     push();
-//     translate(0, -totalElevation * 0.5); // Increase vertical shift to exaggerate the elevation
-  
-//     beginShape();
-//     vertex(-tw, 0);
-//     vertex(0, th);
-//     vertex(tw, 0);
-//     vertex(0, -th);
-//     endShape(CLOSE);
-  
-//     let n = clicks[[i, j]] | 0;
-//     if (n % 2 == 1) {
-//       fill(0, 0, 0, 32);
-//       ellipse(0, 0, 10, 5);
-//       translate(0, -10);
-//       fill(255, 255, 100, 128);
-//       ellipse(0, 0, 10, 10);
-//     }
-  
-//     pop();
-//   }
 
-
-// color v2
-// function p3_drawTile(i, j) {
-//   noStroke();
-
-//   // Use hash to generate a consistent seed for randomness in colors based on position
-//   let seed = XXH.h32(`${i}_${j}`, worldSeed).toNumber();
-//   randomSeed(seed);
-
-//   // Combine two layers of noise with increased elevation impact
-//   let baseElevation = noise(i * 0.05, j * 0.05) * 0.75; // Larger scale variations
-//   let detailElevation = noise(i * 0.2, j * 0.2) * 0.25; // Smaller scale, more detail
-//   let totalElevation = (baseElevation + detailElevation) * 700; // Scale up the maximum elevation
-//   if (totalElevation >600){
-//     totalElevation = totalElevation *1.2
-//   }
-//   // Set colors based on elevation
-//   if (totalElevation < 300) {
-//       // Water
-//       fill(0, 0, 0 + (0.4*totalElevation)); // Darker blue at deeper water
-//   } else if (totalElevation < 320) {
-//       // Beach
-//       fill(210+ random(-20, 20), 180+ random(-10, 10), 140+ random(-10, 10)); // Sandy tan
-//   } else if (totalElevation < 430) {
-//       // Vegetation
-//       fill(34+ random(-20, 20), 139+ random(-20, 20), 34+ random(-20, 20)); // Forest green
-//   } else if (totalElevation < 600) {
-//       // Mountain
-//       fill(169+ random(-2, 10), 169+ random(-2, 10), 169+ random(-2, 10)); // Dark grey
-//   } else {
-//       // Snow caps
-//       fill(255); // White
-//   }
-
-//   push();
-//   translate(0, -totalElevation * 0.5); // Increase vertical shift to exaggerate the elevation
-
-//   beginShape();
-//   vertex(-tw, 0);
-//   vertex(0, th);
-//   vertex(tw, 0);
-//   vertex(0, -th);
-//   endShape(CLOSE);
-
-//   let n = clicks[[i, j]] | 0;
-//   if (n % 2 == 1) {
-//     fill(0, 0, 0, 32);
-//     ellipse(0, 0, 10, 5);
-//     translate(0, -10);
-//     fill(255, 255, 100, 128);
-//     ellipse(0, 0, 10, 10);
-//   }
-
-//   pop();
-// }
 
 function p3_drawTile(i, j) {
   noStroke();
@@ -292,56 +170,6 @@ function p3_drawTile(i, j) {
 }
 
 
-// function p3_drawTile(i, j) {
-//   noStroke();
-//   // Use hash to generate a consistent seed for randomness in colors based on position
-//   let seed = XXH.h32(`${i}_${j}`, worldSeed).toNumber();
-//   randomSeed(seed);
-  
-//   // Combine two layers of noise for elevation
-//   let baseElevation = noise(i * 0.1, j * 0.1) * 0.6; // Larger areas, less elevation impact
-//   let detailElevation = noise(i * 0.5, j * 0.5) * 0.4; // Smaller, more frequent changes
-//   let totalElevation = (baseElevation + detailElevation) * 800; // Scale up the maximum elevation for more extremes
-
-//   // Color settings based on elevation
-//   if (totalElevation < 150) {
-//       // Water: varying shades of blue
-//       fill(0, 0, 200 + random(-20, 55));
-//   } else if (totalElevation < 250) {
-//       // Beach: sandy colors with variation
-//       fill(210 + random(-20, 20), 180 + random(-10, 10), 140 + random(-10, 10));
-//   } else if (totalElevation < 500) {
-//       // Vegetation: varying shades of green
-//       fill(34 + random(-10, 10), 139 + random(-20, 20), 34 + random(-10, 10));
-//   } else if (totalElevation < 650) {
-//       // Mountain: darker grey
-//       fill(100 + random(-20, 60), 100 + random(-20, 60), 100 + random(-20, 60));
-//   } else {
-//       // Snow caps: pure white with slight grey shading
-//       fill(255, 255, 255 - random(0, 10));
-//   }
-
-//   push();
-//   translate(0, -totalElevation * 0.5); // Exaggerate the elevation by shifting tiles up based on their elevation
-
-//   beginShape();
-//   vertex(-tw, 0);
-//   vertex(0, th);
-//   vertex(tw, 0);
-//   vertex(0, -th);
-//   endShape(CLOSE);
-
-//   let n = clicks[[i, j]] | 0;
-//   if (n % 2 == 1) {
-//     fill(0, 0, 0, 32);
-//     ellipse(0, 0, 10, 5);
-//     translate(0, -10);
-//     fill(255, 255, 100, 128);
-//     ellipse(0, 0, 10, 10);
-//   }
-
-//   pop();
-// }
 
 
 
